@@ -46,14 +46,6 @@ jobs:
           echo "::set-output name=dir::$HOME/.cache/docker"
 
 
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.docker-cache.outputs.dir }}
-          key: ${{ runner.os }}-docker-${{ hashFiles('Dockerfile') }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
-
-
       - name: download docker image cache
         uses: actions/cache@v2
         with:
@@ -70,10 +62,19 @@ jobs:
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
 
-      - name: Save image to cache
+      - name: Save image to tar
         run: |
           mkdir -p ~/.cache/docker/
           docker save -o ~/.cache/docker/${IMAGE_NAME}.tar ${IMAGE_NAME}
+
+
+      - name: upload docker image cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.docker-cache.outputs.dir }}
+          key: ${{ runner.os }}-docker-${{ hashFiles('Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
 
 
       - name: Log into registry
