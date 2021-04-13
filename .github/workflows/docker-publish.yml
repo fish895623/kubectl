@@ -41,6 +41,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+
+      - name: setup custom env
+        run: |
+          echo "::set-output name=dir::$HOME/.cache/docker"
+
+
       - uses: actions/cache@v2
         with:
           path: ${{ steps.docker-cache.outputs.dir }}
@@ -60,6 +66,7 @@ jobs:
         run: |
           docker load -i ~/.cache/docker/${IMAGE_NAME}.tar
 
+
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
@@ -70,11 +77,10 @@ jobs:
           mkdir -p ~/.cache/docker/
           docker save -o ~/.cache/docker/${IMAGE_NAME}.tar ${IMAGE_NAME}
 
-          echo "::set-output name=dir::$HOME/.cache/docker"
-
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
 
       - name: Push image
         run: |
