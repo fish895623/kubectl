@@ -43,6 +43,7 @@ jobs:
       
 
       - name: setup custom env
+        id: docker-cache
         run: |
           echo "::set-output name=dir::$HOME/.cache/docker"
 
@@ -72,7 +73,6 @@ jobs:
 
 
       - name: Save image to cache
-        id: docker-cache
         run: |
           mkdir -p ~/.cache/docker/
           docker save -o ~/.cache/docker/${IMAGE_NAME}.tar ${IMAGE_NAME}
