@@ -40,7 +40,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
+
+      - name: Build image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+
+
       - name: Load image
         id: docker-cache
         run: |
@@ -57,9 +62,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-docker-
 
-
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
